@@ -35,8 +35,6 @@ import org.redline_rpm.payload.Directive
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
-import java.nio.channels.FileChannel
-
 import static com.netflix.gradle.plugins.utils.GradleUtils.lookup
 
 @CompileDynamic
@@ -193,7 +191,7 @@ class RpmCopyAction extends AbstractPackagingCopyAction<Rpm> {
 
     @Override
     protected void addLink(Link link) {
-        builder.addLink link.path, link.target, link.permissions
+        builder.addLink(link.path, link.target, link.permissions, link.user, link.permissionGroup)
     }
 
     @Override

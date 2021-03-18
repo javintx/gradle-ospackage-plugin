@@ -1,11 +1,7 @@
 package com.netflix.gradle.plugins.packaging
 
 import com.netflix.gradle.plugins.deb.control.MultiArch
-import org.gradle.api.tasks.Input
-import org.gradle.api.tasks.InputFile
-import org.gradle.api.tasks.Optional
-import org.gradle.api.tasks.PathSensitive
-import org.gradle.api.tasks.PathSensitivity
+import org.gradle.api.tasks.*
 import org.redline_rpm.header.Architecture
 import org.redline_rpm.header.Flags
 import org.redline_rpm.header.Os
@@ -767,17 +763,21 @@ class SystemPackagingExtension {
     // @groovy.transform.PackageScope doesn't seem to set the proper scope when going through a @Delegate
 
 
-
     Link link(String path, String target) {
-        link(path, target, -1)
+        Link link = new Link(path: path, target: target)
+        links << link
+        link
     }
 
     Link link(String path, String target, int permissions) {
-        Link link = new Link()
-        link.path = path
-        link.target = target
-        link.permissions = permissions
-        links.add(link)
+        Link link = new Link(path: path, target: target, permissions: permissions)
+        links << link
+        link
+    }
+
+    Link link(String path, String target, int permissions, String user, String permissionGroup) {
+        Link link = new Link(path: path, target: target, permissions: permissions, user: user, permissionGroup: permissionGroup)
+        links << link
         link
     }
 

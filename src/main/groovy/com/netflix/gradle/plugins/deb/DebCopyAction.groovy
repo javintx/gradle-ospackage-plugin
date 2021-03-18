@@ -30,6 +30,7 @@ import org.apache.commons.lang3.time.DateFormatUtils
 import org.gradle.api.GradleException
 import org.gradle.api.internal.file.copy.CopyAction
 import org.gradle.api.internal.file.copy.FileCopyDetailsInternal
+import org.redline_rpm.payload.Directive
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.vafer.jdeb.Compression
@@ -40,9 +41,9 @@ import org.vafer.jdeb.mapping.Mapper
 import org.vafer.jdeb.mapping.PermMapper
 import org.vafer.jdeb.producers.DataProducerLink
 import org.vafer.jdeb.producers.DataProducerPathTemplate
-import org.redline_rpm.payload.Directive
 
 import static com.netflix.gradle.plugins.utils.GradleUtils.lookup
+
 /**
  * Forked and modified from org.jamel.pkg4j.gradle.tasks.BuildDebTask
  */
@@ -144,7 +145,11 @@ class DebCopyAction extends AbstractPackagingCopyAction<Deb> {
 
     @Override
     protected void addLink(Link link) {
-        dataProducers << new DataProducerLink(link.path, link.target, true, null, null, null);
+        def user = link.user ? link.user : task.user
+        def permissionGroup = link.permissionGroup ? link.permissionGroup : task.permissionGroup
+        dataProducers << new DataProducerLink(link.path, link.target, true, null, null,
+                [new PermMapper(-1, -1, user, permissionGroup,
+                        link.permissions, -1, 0, null)] as Mapper[]);
     }
 
     @Override
@@ -200,9 +205,9 @@ class DebCopyAction extends AbstractPackagingCopyAction<Deb> {
         def user = directory.user ? directory.user : task.user
         def permissionGroup = directory.permissionGroup ? directory.permissionGroup : task.permissionGroup
         dataProducers << new DataProducerPathTemplate(
-            [directory.path] as String[], null, null, 
-            [ new PermMapper(-1, -1, user, permissionGroup,
-            directory.permissions, -1, 0, null) ] as Mapper[])
+                [directory.path] as String[], null, null,
+                [new PermMapper(-1, -1, user, permissionGroup,
+                        directory.permissions, -1, 0, null)] as Mapper[])
     }
 
     protected String getMultiArch() {
